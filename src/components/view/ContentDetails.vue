@@ -36,15 +36,16 @@
 </template>
 
 <script>
-/* eslint-disable */ 
 export default {
+  name:'detailpage',
   data() {
     return {
     };
   },
   computed:{
     getContentDetails(){
-      let data = this.$store.getters['content/getContentListById'](this.$route.params.id)
+      let data = this.$store.getters['getContentListById'](this.$route.params.id)
+      console.log("Data||",data)
       return data
     }
   },
@@ -52,12 +53,20 @@ export default {
 </script>
 
 <style  scoped>
-
+/* @import '../../style/style.css'; */
 
 .secion--one{
     display: grid;
     grid-template-columns: 65% 35%;
     align-items: center;
+}
+.btn{
+  padding: 15px;
+  border-radius: 15px;
+  border: 0;
+  background: skyblue;
+  cursor:pointer;
+  margin:5px;
 }
 
 </style>

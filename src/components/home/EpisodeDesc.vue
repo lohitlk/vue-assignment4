@@ -1,11 +1,20 @@
 <template>
   <div class="container--episode">
-    <div class="section" v-for="(episode, index) in contentList" :key="index">
+    <div class="section" v-for="(episode, index) in episodeLists" :key="index">
       <div class="card">
-        <div class="star--svg" @click="addToFavourite(episode)">
+        <div
+          class="star--svg"
+          style="cursor: pointer"
+          @click="addToFavourite(episode)"
+        >
+          <!-- <Star /> -->
           <Star :added="checkAdded(episode)" />
         </div>
-        <div class="content--info" @click="getContent(episode)">
+        <div
+          class="content--info"
+          style="cursor: pointer"
+          @click="getContent(episode)"
+        >
           <img :src="episodeImage(episode)" alt="images" style="width: 100%" />
           <p class="info" style="font-weight: 700">
             Episode {{ episode.number }}
@@ -16,72 +25,78 @@
       </div>
     </div>
 
-    <teleport to="body">
+    <!-- <teleport to="body">
       <Modal v-if="showModal" @add-fav="checkAddFav" />
-    </teleport>
+    </teleport> -->
   </div>
 </template>
 
 <script>
-/* eslint-disable */
-import { computed } from "vue";
+// import { computed } from "vue";
 import { mapGetters, mapMutations } from "vuex";
 import Star from "../../svg/Star.vue";
-import { useRouter } from "vue-router";
-import Modal from "../common/Modal.vue";
+// import { useRouter } from "vue-router";
+// import Modal from "../common/Modal.vue";
 
 export default {
-  components: { Modal, Star },
+  components: { Star },
   data() {
     return {
-      showModal: false,
-      episodeDetail: "",
+      //   showModal: false,
+      episodeDetail: [],
     };
-  },
-  setup(props) {
-    const router = useRouter();
-
-    const contentList = computed(() => {
-      return props.episodeLists;
-    });
-
-    const getContent = (episode) => {
-      router.push({
-        name: "detailpage",
-        params: { id: episode.id },
-      });
-    };
-
-    return { contentList, getContent };
   },
   props: {
     episodeLists: {
-      type: Object,
+      type: Array,
       default: null,
     },
   },
+  // setup(props) {
+  //   const router = useRouter();
+
+  //   const contentList = computed(() => {
+  //     return props.episodeLists;
+  //   });
+
+  //   const getContent = (episode) => {
+  //     console.log("episode||", episode);
+  //     router.push({
+  //       name: "detailpage",
+  //       params: { id: episode.id },
+  //     });
+  //   };
+
+  //   return { contentList, getContent };
+  // },
+  // props: {
+  //   episodeLists: {
+  //     type: Object,
+  //     default: null,
+  //   },
+  // },
 
   computed: {
-    ...mapGetters("content", ["getFavList"]),
+    ...mapGetters( ["getFavList"]),
   },
   methods: {
-    ...mapMutations("content", ["setFavList"]),
+    ...mapMutations( ["setFavList"]),
+
     episodeImage(episode) {
       return episode && episode.image && episode.image.medium;
     },
-
+    getContent(episode) {
+      console.log("episode||", episode);
+      this.$router.push({
+        name: "detailpage",
+        params: { id: episode.id },
+      });
+    },
     addToFavourite(episode) {
-      this.showModal = true;
+      // this.showModal = true;
       this.episodeDetail = episode;
-    },
-    checkAdded(currEpisode) {
-      let status = this.getFavList.some((ele) => ele.id === currEpisode.id);
-      return status;
-    },
-    checkAddFav(value) {
-      if (value) {
-        let finalArr = [];
-        if (this.checkAdded(this.episodeDetail)) {
+       let finalArr = [];
+        if (this.checkAdded(episode)) {
           finalArr = this.getFavList.filter((ele) => {
             if (ele.id != this.episodeDetail.id) {
               return ele;
@@ -90,13 +105,31 @@ export default {
         } else {
           finalArr = [...this.getFavList, this.episodeDetail];
         }
-
         this.setFavList(finalArr);
-        this.showModal = false;
-      } else {
-        this.showModal = false;
-      }
     },
+    checkAdded(currEpisode) {
+      let status = this.getFavList.some((ele) => ele.id === currEpisode.id);
+        return status;
+    },
+    // checkAddFav(value) {
+    //   if (value) {
+      //   let finalArr = [];
+      //   if (this.checkAdded(this.episodeDetail)) {
+      //     finalArr = this.getFavList.filter((ele) => {
+      //       if (ele.id != this.episodeDetail.id) {
+      //         return ele;
+      //       }
+      //     });
+      //   } else {
+      //     finalArr = [...this.getFavList, this.episodeDetail];
+      //   }
+
+      //   this.setFavList(finalArr);
+      //   this.showModal = false;
+      // } else {
+      //   this.showModal = false;
+      // }
+    // },
   },
 };
 </script>
