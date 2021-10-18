@@ -46,7 +46,7 @@ const store = createStore({
                     redirect: 'follow'
                 };
 
-                fetch("http://localhost:3000/data", requestOptions)
+                fetch("https://lohitlk.github.io/data/bigbang.json", requestOptions)
                     .then(response => response.json())
                     .then(result => {
                         if (result._embedded) {
