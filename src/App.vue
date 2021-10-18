@@ -1,26 +1,97 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <div v-if="loading" class="loader--container">
+      <div class="loader">
+        <img src="@/assets/images/loader.gif" style="width: 30%" />
+      </div>
+    </div>
+    <div v-else class="main">
+      <router-view></router-view>
+      <!-- <Home/> -->
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
+import { mapActions,mapMutations,mapGetters } from "vuex";
 export default {
-  name: 'App',
+  name: "App",
+  data() {
+    return {
+      checkedData: [],
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    // Home,
+    // TabMain
+  },
+  computed: {
+    ...mapGetters(['getLoading']),
+    loading() {
+      return this.getLoading;
+    },
+  },
+  created() {
+    let userData = localStorage.getItem("userData");
+    if (!userData) {
+      this.$router.push({ name: "login" });
+    }
+    this.actInfo()
+      .then((res) => {
+        this.setContentList(res._embedded.episodes)
+      })
+      .catch((err) => {
+        this.errMsg = err;
+      });
+  },
+  methods: {
+    // ...mapActions('content',['actInfo']),
+    ...mapActions('content',['actInfo']),
+    ...mapMutations('content',['setContentList'])
+  },
+
+};
 </script>
 
 <style>
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /* text-align: center; */
   color: #2c3e50;
-  margin-top: 60px;
+}
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loader--container {
+  background: rgb(128, 128, 128, 0.8);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+/* .slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+} */
+.main {
+  margin: 20px;
 }
 </style>
